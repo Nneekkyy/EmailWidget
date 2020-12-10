@@ -10,14 +10,13 @@ const options = {
 };
 
 
+new createEmailsField({container, ...options})
 
-const testEmailEditor = new EmailsEditor({container, ...options});
+
 // testEmailEditor.setEmails(["1@gmail.com"]);
 // console.log("test getEmailList: ", testEmailEditor.getEmailList());
 
-function EmailsEditor(elem) {
-    const items = new Map();
-
+function createEmailsField(elem) {
     const mainContainer = document.createElement("div");
     mainContainer.id = "window";
 
@@ -44,7 +43,7 @@ function EmailsEditor(elem) {
     };
     input.onkeyup = event => {
           if (event.keyCode === 13) {
-            addItems(input.value);
+            addItem(input.value);
             input.value = "";
         }
     };
@@ -54,7 +53,7 @@ function EmailsEditor(elem) {
 
     input.onblur = () => {
         document.getElementById('emails__placeholder').style.display = '';
-        addItems(input.value);
+        addItem(input.value);
         input.value = "";
     };
 
@@ -62,55 +61,7 @@ function EmailsEditor(elem) {
 
     mainContainer.append(headerTitle, emailsContainer);
 
-    const addItems = emails => {
-        const emailList = emails
-            .split(",")
-            .map(item => item.trim())
-            .filter(item => item);
 
-        let isChanged = false;
-
-        emailList.forEach(item => {
-            if (items.has(item)) {
-                return;
-            }
-
-            const isValid = emailValidator(item);
-            isChanged = isValid;
-
-            const elementContainer = document.createElement("span");
-            elementContainer.className = `email${
-                isValid ? "" : " email--wrong"
-            }`;
-
-            const elementContent = document.createElement("span");
-            elementContent.textContent = item;
-            elementContent.className = "email__content";
-
-            const deleteButton = document.createElement("span");
-            deleteButton.className = "email__delete-button";
-            deleteButton.onclick = (key => {
-                return event => {
-                    event.stopPropagation();
-                    deleteItem(key);
-                };
-            })(item);
-
-            elementContainer.append(elementContent, deleteButton);
-
-            items.set(item, {
-                isValid,
-                element: elementContainer
-            });
-            emailsContainer.insertBefore(elementContainer, placeholder);
-        });
-        isChanged && dispatchChangeListEvent();
-    };
-
-    const emailValidator = email => {
-        const valid = /^[\w]{1}[\w-\.]*@[\w-]+\.[a-z]{2,4}$/i;
-        return valid.test(String(email).toLowerCase());
-    };
     const addEmailButton = document.createElement("button");
     addEmailButton.id = "button_add";
     addEmailButton.textContent = "Add email";
@@ -121,14 +72,30 @@ function EmailsEditor(elem) {
     getEmailButton.textContent = "Get emails count";
 
 
-    let buttonsContainer = "";
-    if (elem.showButtonsPanel) {
-        buttonsContainer = document.createElement("div");
-        buttonsContainer.className = "buttons-container";
-        buttonsContainer.append(addEmailButton, getEmailButton);
-    }
+    let buttonsContainer = document.createElement("div");
+    buttonsContainer.id = "buttons";
+    buttonsContainer.append(addEmailButton, getEmailButton);
 
     elem.container.append(mainContainer, buttonsContainer);
+
+    const emailValidator = email => {
+        const valid = /^[\w]{1}[\w-\.]*@[\w-]+\.[a-z]{2,4}$/i;
+        return valid.test(String(email).toLowerCase());
+    };
+
+    function addItem(item) {
+      emails__input.textContent = item;
+      const emailItem = document.createElement("span");
+      emailItem.className = "email";
+      emailItem.textContent = item;
+      emailsContainer.prepend(emailItem);
+      if (emailValidator(item)) {
+        console.log('true');
+      } else {
+        console.log('false');
+      }
+      console.log(item);
+    }
     //css стили для элементов
     //виджет
     document.getElementById('email-editor').style.backgroundColor = '#DCDCDC';
