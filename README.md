@@ -11,4 +11,4 @@
 Использовался только JS.
 
 ## Ссылка на Github Pages
-https://barrrsss.github.io/EmailWidget
+https://nneekkyy.github.io/EmailWidget
